@@ -1,13 +1,11 @@
 ﻿
-namespace ProdutosApi.Business.Notificacoes
+namespace ProdutosApi.Business.Notificacoes;
+public class Notificacao
 {
-    public class Notificacao
+    public Notificacao(string mensagem)
     {
-        public Notificacao(string mensagem)
-        {
-            Mensagem = mensagem;
-        }
-
-        public string? Mensagem { get; }
+        Mensagem = mensagem;
     }
+
+    public string? Mensagem { get; }
 }

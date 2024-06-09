@@ -4,41 +4,39 @@ using ProdutosApi.Business.Notificacoes;
 using FluentValidation;
 using FluentValidation.Results;
 
-namespace ProdutosApi.Business.Services
+namespace ProdutosApi.Business.Services;
+public abstract class BaseService
 {
-    public abstract class BaseService
+    private readonly INotificador _notificador;
+
+    public BaseService(INotificador notificador)
     {
-        private readonly INotificador _notificador;
+        _notificador = notificador;
+    }
 
-        public BaseService(INotificador notificador)
+    protected void Notificar(ValidationResult validationResult)
+    {
+        foreach (var item in validationResult.Errors)
         {
-            _notificador = notificador;
+            Notificar(item.ErrorMessage);
         }
+    }
 
-        protected void Notificar(ValidationResult validationResult)
-        {
-            foreach (var item in validationResult.Errors) 
-            {
-                Notificar(item.ErrorMessage);
-            }
-        }
+    protected void Notificar(string mensagem)
+    {
+        _notificador.Handle(new Notificacao(mensagem));
+    }
 
-        protected void Notificar(string mensagem)
-        {
-            _notificador.Handle(new Notificacao(mensagem));
-        }
+    protected bool ExecutarValidacao<TV, TE>(TV validacao, TE entidade)
+        where TV : AbstractValidator<TE>
+        where TE : Entity
+    {
+        var validator = validacao.Validate(entidade);
 
-        protected bool ExecutarValidacao<TV, TE>(TV validacao, TE entidade) 
-            where TV : AbstractValidator<TE>
-            where TE : Entity
-        {
-            var validator = validacao.Validate(entidade);
+        if (validator.IsValid) return true;
 
-            if (validator.IsValid) return true;
+        Notificar(validator);
 
-            Notificar(validator);
-
-            return false;
-        }
+        return false;
     }
 }

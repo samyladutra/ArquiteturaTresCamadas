@@ -2,40 +2,38 @@
 using ProdutosApi.Business.Models;
 using ProdutosApi.Business.Models.Validations;
 
-namespace ProdutosApi.Business.Services
+namespace ProdutosApi.Business.Services;
+public class ProdutoService : BaseService, IProdutoService
 {
-    public class ProdutoService : BaseService, IProdutoService
+    private readonly IProdutoRepository _produtoRepository;
+
+    public ProdutoService(IProdutoRepository produtoRepository,
+                          INotificador notificador) : base(notificador)
     {
-        private readonly IProdutoRepository _produtoRepository;
+        _produtoRepository = produtoRepository;
+    }
 
-        public ProdutoService(IProdutoRepository produtoRepository,
-                              INotificador notificador) : base(notificador)
-        {
-            _produtoRepository = produtoRepository;
-        }
+    public async Task Adicionar(Produto produto)
+    {
+        if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
 
-        public async Task Adicionar(Produto produto)
-        {
-            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+        await _produtoRepository.Adicionar(produto);
+    }
 
-            await _produtoRepository.Adicionar(produto);
-        }
+    public async Task Atualizar(Produto produto)
+    {
+        if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
 
-        public async Task Atualizar(Produto produto)
-        {
-            if (!ExecutarValidacao(new ProdutoValidation(), produto)) return;
+        await _produtoRepository.Atualizar(produto);
+    }
 
-            await _produtoRepository.Atualizar(produto);
-        }
+    public async Task Remover(Guid id)
+    {
+        await _produtoRepository.Remover(id);
+    }
 
-        public async Task Remover(Guid id)
-        {
-            await _produtoRepository.Remover(id);
-        }
-
-        public void Dispose()
-        {
-            _produtoRepository?.Dispose();
-        }
+    public void Dispose()
+    {
+        _produtoRepository?.Dispose();
     }
 }

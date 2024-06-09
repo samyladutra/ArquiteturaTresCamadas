@@ -1,13 +1,11 @@
 ﻿
-namespace ProdutosApi.Business.Models
+namespace ProdutosApi.Business.Models;
+public abstract class Entity
 {
-    public abstract class Entity
+    protected Entity()
     {
-        protected Entity() 
-        {
-            Id = Guid.NewGuid();
-        }
-
-        public Guid Id { get; set; }
+        Id = Guid.NewGuid();
     }
+
+    public Guid Id { get; set; }
 }
