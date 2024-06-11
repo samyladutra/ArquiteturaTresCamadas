@@ -9,5 +9,10 @@ public class FornecedorServiceTests
     public void Atualizar_Fornecedor_Deve_Retornar_Sucesso()
     {
         var fornecedor = new Mock<Fornecedor>();
+        var fornecedorService = new Mock<FornecedorService>();
+
+        fornecedorService.Adicionar(fornecedor);
+
+        
     }
 }

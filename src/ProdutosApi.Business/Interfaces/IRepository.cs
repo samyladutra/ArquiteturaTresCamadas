@@ -1,8 +1,8 @@
 ﻿using ProdutosApi.Business.Models;
 using System.Linq.Expressions;
 
-namespace ProdutosApi.Business.Interfaces/
-    public interface IRepository<TEntity> : IDisposable where TEntity : Entity
+namespace ProdutosApi.Business.Interfaces;
+public interface IRepository<TEntity> : IDisposable where TEntity : Entity
 {
     Task Adicionar(TEntity entity);
     Task<TEntity> ObterPorId(Guid id);
