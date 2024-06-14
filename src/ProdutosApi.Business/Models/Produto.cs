@@ -11,4 +11,6 @@ public class Produto : Entity
     public DateTime DataCadastro { get; set; }
 
     public bool Ativo { get; set; }
+    /* EF Relation */
+    public Fornecedor Fornecedor { get; set; }
 }

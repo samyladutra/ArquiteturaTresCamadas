@@ -8,5 +8,6 @@ public class Fornecedor : Entity
     public bool Ativo { get; set; }
     public Endereco? Endereco { get; set; }
 
+    /* EF Relation */
     public IEnumerable<Produto> Produtos { get; set; }
 }
