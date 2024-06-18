@@ -3,8 +3,7 @@ using ProdutosApi.Business.Models;
 
 namespace ProdutosApi.Data.Context;
 public class MeuDbContext : DbContext
-    {
-        public MeuDbContext(DbContextOptions<MeuDbContext> options) : base(options)
+    {        public MeuDbContext(DbContextOptions<MeuDbContext> options) : base(options)
         {
             ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             ChangeTracker.AutoDetectChangesEnabled = false;
