@@ -24,7 +24,7 @@ public class FornecedorMapping : IEntityTypeConfiguration<Fornecedor>
         // 1 : N => Fornecedor : Produtos
         builder.HasMany(p => p.Produtos)
             .WithOne(p => p.Fornecedor)
-            .HasForeignKey(p => p.Id);
+            .HasForeignKey(p => p.FornecedorId);
 
         builder.ToTable("Fornecedores");
     }
