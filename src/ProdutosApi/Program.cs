@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using ProdutosApi.Data.Context;
+using ProdutosApi.Configurations;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,8 @@ builder.Services.AddDbContext<MeuDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.ResolveDependencies();
 
 var app = builder.Build();
 
