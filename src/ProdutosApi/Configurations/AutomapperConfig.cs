@@ -4,15 +4,15 @@ using AutoMapper;
 
 namespace ProdutosApi.Configurations;
 
- public class AutomapperConfig : Profile
+public class AutomapperConfig : Profile
+{
+    public AutomapperConfig()
     {
-        public AutomapperConfig() 
-        {
-            CreateMap<Fornecedor, FornecedorViewModel>().ReverseMap();
-            CreateMap<Endereco, EnderecoViewModel>().ReverseMap();
-            CreateMap<ProdutoViewModel, Produto>();
+        CreateMap<Fornecedor, FornecedorViewModel>().ReverseMap();
+        CreateMap<Endereco, EnderecoViewModel>().ReverseMap();
+        CreateMap<ProdutoViewModel, Produto>();
 
-            CreateMap<Produto, ProdutoViewModel>()
-                .ForMember(dest => dest.NomeFornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome));
-        }
+        CreateMap<Produto, ProdutoViewModel>()
+            .ForMember(dest => dest.NomeFornecedor, opt => opt.MapFrom(src => src.Fornecedor.Nome));
     }
+}
