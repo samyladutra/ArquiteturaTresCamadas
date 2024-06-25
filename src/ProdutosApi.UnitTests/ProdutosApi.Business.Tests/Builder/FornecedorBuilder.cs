@@ -20,7 +20,7 @@ public class FornecedorBuilder
         return this;
     }
 
-    public FornecedorBuilder ComTipoFornecedor(TipoFornecedor tipoFornecedor)
+    public FornecedorBuilder DoTipo(TipoFornecedor tipoFornecedor)
     {
         _fornecedor.TipoFornecedor = tipoFornecedor;
         return this;
