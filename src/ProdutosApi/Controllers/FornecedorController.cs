@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using ProdutosApi.Business.Interfaces;
 using ProdutosApi.Business.Models;
 using ProdutosApi.ViewModel;
+using System.Net;
 
 namespace ProdutosApi.Controllers;
 
@@ -15,7 +16,8 @@ public class FornecedorController : MainController
 
     public FornecedorController(IMapper mapper,
                                   IFornecedorRepository fornecedorRepository,
-                                  IFornecedorService fornecedorService)
+                                  IFornecedorService fornecedorService,
+                                  INotificador notificador) : base(notificador)
     {
         _mapper = mapper;
         _fornecedorRepository = fornecedorRepository;
@@ -45,7 +47,7 @@ public class FornecedorController : MainController
 
         await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(fornecedorViewModel));
 
-        return CustomResponse(fornecedorViewModel);
+        return CustomResponse(HttpStatusCode.Created, fornecedorViewModel);
     }
 
     [HttpPut("{id:guid}")]
@@ -61,7 +63,7 @@ public class FornecedorController : MainController
 
         await _fornecedorService.Atualizar(_mapper.Map<Fornecedor>(fornecedorViewModel));
 
-        return CustomResponse();
+        return CustomResponse(HttpStatusCode.NoContent);
     }
 
     [HttpDelete("{id:guid}")]
@@ -69,7 +71,7 @@ public class FornecedorController : MainController
     {
         await _fornecedorService.Remover(id);
 
-        return CustomResponse();
+        return CustomResponse(HttpStatusCode.NoContent);
     }
 
     private async Task<FornecedorViewModel> ObterFornecedorProdutosEndereco(Guid id)

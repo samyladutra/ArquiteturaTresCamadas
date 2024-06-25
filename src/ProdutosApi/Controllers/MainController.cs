@@ -1,37 +1,61 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using ProdutosApi.Business.Notificacoes;
+using ProdutosApi.Business.Interfaces;
+using System.Net;
 
 namespace ProdutosApi.Controllers;
 
 [ApiController]
 public abstract class MainController : ControllerBase
 {
-    protected bool OperacaoValida()
+    private readonly INotificador _notificador;
+
+    protected MainController(INotificador notificador)
     {
-        return true;
+        _notificador = notificador;
     }
 
-    protected ActionResult CustomResponse(object result = null)
+    protected bool OperacaoValida()
+    {
+        return !_notificador.TemNotificacao();
+    }
+
+    protected ActionResult CustomResponse(HttpStatusCode statusCode = HttpStatusCode.OK, object result = null)
     {
         if (OperacaoValida())
         {
-            return new ObjectResult(result);
+            return new ObjectResult(result)
+            {
+                StatusCode = Convert.ToInt32(statusCode),
+            };
         }
 
         return BadRequest(new
         {
-            // errors = Obter erros
+            errors = _notificador.ObterNotificacoes().Select(n => n.Mensagem)
         });
     }
 
+
     protected ActionResult CustomResponse(ModelStateDictionary modelState)
     {
-        if (!modelState.IsValid) { } // Notificar erros
+        if (!modelState.IsValid) NotificarErroModelInvalida(modelState);
         return CustomResponse();
+    }
+
+    protected void NotificarErroModelInvalida(ModelStateDictionary modelState)
+    {
+        var erros = modelState.Values.SelectMany(e => e.Errors);
+        foreach (var erro in erros)
+        {
+            var errorMsg = erro.Exception == null ? erro.ErrorMessage : erro.Exception.Message;
+            NotificarErro(errorMsg);
+        }
     }
 
     protected void NotificarErro(string mensagem)
     {
-
+        _notificador.Handle(new Notificacao(mensagem));
     }
 }
