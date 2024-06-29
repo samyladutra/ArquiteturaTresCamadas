@@ -9,12 +9,14 @@ public class FornecedorRepository : Repository<Fornecedor>, IFornecedorRepositor
 {
     public FornecedorRepository(MeuDbContext context) : base(context) { }
 
+
     public virtual async Task<Fornecedor> ObterFornecedorEndereco(Guid id)
     {
         return await Db.Fornecedores.AsNoTracking()
             .Include(c => c.Endereco)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
+
 
     public virtual async Task<Fornecedor> ObterFornecedorProdutosEndereco(Guid id)
     {
@@ -23,6 +25,7 @@ public class FornecedorRepository : Repository<Fornecedor>, IFornecedorRepositor
             .Include(c => c.Endereco)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
+
 
     public virtual async Task<Endereco> ObterEnderecoPorFornecedor(Guid fornecedorId)
     {
