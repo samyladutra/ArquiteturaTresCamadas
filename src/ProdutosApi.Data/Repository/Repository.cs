@@ -10,7 +10,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
 {
     protected readonly MeuDbContext Db;
     protected readonly DbSet<TEntity> DbSet;
-
+   
     protected Repository(MeuDbContext db)
     {
         Db = db;
@@ -27,7 +27,7 @@ public abstract class Repository<TEntity> : IRepository<TEntity> where TEntity :
         return await DbSet.ToListAsync();
     }
 
-    public async Task<IEnumerable<TEntity>> Buscar(Expression<Func<TEntity, bool>> predicate)
+    public virtual async Task<IEnumerable<TEntity>> Buscar(Expression<Func<TEntity, bool>> predicate)
     {
         return await DbSet.AsNoTracking().Where(predicate).ToListAsync();
     }
