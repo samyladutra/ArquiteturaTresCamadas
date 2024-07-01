@@ -227,5 +227,109 @@ namespace ProdutosApi.Business.Tests
             //assert
             fornecedorRepository.Verify(r => r.RemoverEnderecoFornecedor(fornecedor.Endereco), Times.Once);
         }
+
+
+        [Fact]
+        public async void Atualizar_Fornecedor_Com_Nome_Invalido_Deve_Retornar_2_Notificacoes()
+        {
+            //arrange
+            var fornecedor = new FornecedorBuilder()
+                                .ComNome("")
+                                .ComDocumento("97310212053")
+                                .Ativo(true)
+                                .Build();
+
+            var notificador = new Mock<INotificador>();
+            var fornecedorService = new FornecedorService(new Mock<IFornecedorRepository>().Object, notificador.Object);
+
+            //act
+            await fornecedorService.Atualizar(fornecedor);
+
+            //assert
+            notificador.Verify(n => n.Handle(It.IsAny<Notificacao>()), Times.Exactly(2));
+        }
+
+        [Theory]
+        [InlineData(TipoFornecedor.PessoaFisica, "123")]
+        [InlineData(TipoFornecedor.PessoaJuridica, "1234")]
+        public async void Atualizar_Fornecedor_Com_CPF_Ou_CNPJ_Invalido_Deve_Retornar_2_Notificacoes(TipoFornecedor tipoFornecedor, string documento)
+        {
+            //arrange
+            var fornecedor = new FornecedorBuilder()
+                                .ComNome("NomeTeste")
+                                .DoTipo(tipoFornecedor)
+                                .ComDocumento(documento)
+                                .Ativo(true)
+                                .Build();
+
+            var notificador = new Mock<INotificador>();
+            var fornecedorService = new FornecedorService(new Mock<IFornecedorRepository>().Object, notificador.Object);
+
+            //act
+            await fornecedorService.Atualizar(fornecedor);
+
+            //assert
+            notificador.Verify(n => n.Handle(It.IsAny<Notificacao>()), Times.Exactly(2));
+        }
+
+
+        [Fact]
+        public async void Atualizar_Fornecedor_Com_Dados_Validos_Deve_Efetivar_Alteracao_Na_Base_De_Dados()
+        {
+            //arrange
+            var fornecedor = new FornecedorBuilder()
+                                .ComId(Guid.NewGuid())
+                                .ComNome("NomeTeste")
+                                .DoTipo(TipoFornecedor.PessoaFisica)
+                                .ComDocumento("97310212053")
+                                .ComEndereco(new Endereco()
+                                {
+                                    Logradouro = "rua",
+                                    Cep = "30421031",
+                                    Numero = "2"
+                                })
+                                .Ativo(true)
+                                .Build();
+
+            var fornecedorRepository = new Mock<IFornecedorRepository>();
+            var fornecedorService = new FornecedorService(fornecedorRepository.Object, new Mock<INotificador>().Object);
+
+            //act
+            await fornecedorService.Atualizar(fornecedor);
+
+            //assert
+            fornecedorRepository.Verify(f => f.Atualizar(fornecedor), Times.Once);
+        }
+
+        [Fact]
+        public async void Atualizar_Fornecedor_Com_Id_Ja_Existente_Nao_Deve_Incluir_Fornecedor_Na_Base_De_Dados()
+        {
+            //arrange
+            var fornecedor = new FornecedorBuilder()
+                                .ComId(Guid.NewGuid())
+                                .ComNome("NomeTeste")
+                                .DoTipo(TipoFornecedor.PessoaFisica)
+                                .ComDocumento("97310212053")
+                                .ComEndereco(new Endereco()
+                                {
+                                    Logradouro = "rua",
+                                    Cep = "30421031",
+                                    Numero = "2"
+                                })
+                                .Ativo(true)
+                                .Build();
+
+            var fornecedorRepository = new Mock<IFornecedorRepository>();
+            var fornecedorService = new FornecedorService(fornecedorRepository.Object, new Mock<INotificador>().Object);
+
+            fornecedorRepository.Setup(f => f.Buscar(It.IsAny<Expression<Func<Fornecedor, bool>>>()))
+                            .Returns(Task.FromResult<IEnumerable<Fornecedor>>(new List<Fornecedor>() { fornecedor }));
+
+            //act
+            await fornecedorService.Atualizar(fornecedor);
+
+            //assert
+            fornecedorRepository.Verify(r => r.Atualizar(It.IsAny<Fornecedor>()), Times.Never);
+        }
     }
 }
